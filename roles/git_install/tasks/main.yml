@@ -1,0 +1,49 @@
+---
+  - name: Install yum packages
+    yum:
+      name:
+        - curl-devel
+        - expat-devel
+        - gettext-devel
+        - openssl-devel
+        - zlib-devel
+        - wget
+        - gcc
+        - cpan
+        - make
+
+  - name: Get git binaries
+    unarchive:
+      src: "{{ git_url }}"
+      dest: "{{ git_temp_dir }}"
+      remote_src: yes
+
+  - name: Make all git binaries
+    make:
+      chdir: "{{ git_binary_dir }}"
+      target: install
+      params:
+        prefix: "{{ git_prefix }}"
+
+  - name: Make install git binaries
+    make:
+      chdir: "{{ git_binary_dir }}"
+      target: install
+      params:
+        prefix: "{{ git_prefix }}"
+
+  - name: Remove files
+    file:
+      path: "{{ git_binary_dir }}"
+      state: absent
+
+  - name: Uninstall old version of git to allow new version to be symbolic linked
+    yum:
+      name: git
+      state: removed
+
+  - name: Symbolic link new version of git
+    shell: ln -sv /usr/local/bin/git /usr/bin/
+    args:
+      executable: /bin/bash
+

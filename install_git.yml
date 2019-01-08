@@ -1,0 +1,8 @@
+---
+  - name: Install git
+    hosts: localhost
+    gather_facts: false
+    become: true
+    roles:
+      - git_install
+
